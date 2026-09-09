@@ -18,7 +18,7 @@ export function Onboarding({ onStart }: Props) {
         id="theme"
         className="theme-input"
         rows={3}
-        placeholder="会社員を辞めて、自分で稼げるようになる"
+        placeholder="副業で１万円稼ぐ"
         value={theme}
         onChange={(event) => setTheme(event.target.value)}
         autoFocus
