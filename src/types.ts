@@ -12,4 +12,5 @@ export type Entry = {
   dayNumber: number
   date: string
   activities: Activity[]
+  memo: string
 }

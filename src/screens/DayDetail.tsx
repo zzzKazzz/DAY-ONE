@@ -42,6 +42,13 @@ export function DayDetail({ challenge, dayNumber, entry, onBack }: Props) {
         )}
       </section>
 
+      {entry?.memo ? (
+        <section className="block">
+          <h2>メモ</h2>
+          <p className="memo-text">{entry.memo}</p>
+        </section>
+      ) : null}
+
       <section className="block progress-block">
         <h2>Today&apos;s Progress</h2>
         <p className="total">{entry ? formatMinutes(minutes) : '—'}</p>

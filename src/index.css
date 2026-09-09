@@ -158,9 +158,33 @@ button {
 }
 
 .theme-input::placeholder,
+.memo-input::placeholder,
 .activity-text::placeholder,
 .activity-mins::placeholder {
   color: #4a4744;
+}
+
+.memo-input {
+  width: 100%;
+  margin: 0;
+  padding: 0 0 12px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  outline: none;
+  resize: none;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  color: inherit;
+}
+
+.memo-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  white-space: pre-wrap;
 }
 
 .onboarding-title {

@@ -39,6 +39,7 @@ export function Home({
   const [activities, setActivities] = useState<DraftActivity[]>(() =>
     toDraft(todayEntry?.activities ?? []),
   )
+  const [memo, setMemo] = useState(todayEntry?.memo ?? '')
   const [saved, setSaved] = useState(Boolean(todayEntry))
   const [saving, setSaving] = useState(false)
 
@@ -58,6 +59,7 @@ export function Home({
           text: activity.text.trim(),
           minutes: activity.minutes,
         })),
+        memo: memo.trim(),
       })
       setSaved(true)
     } finally {
@@ -74,6 +76,21 @@ export function Home({
       <section className="block">
         <h2>今日やったこと</h2>
         <ActivityEditor activities={activities} onChange={setActivities} />
+      </section>
+
+      <section className="block">
+        <h2>メモ</h2>
+        <label className="sr-only" htmlFor="memo">
+          メモ
+        </label>
+        <textarea
+          id="memo"
+          className="memo-input"
+          rows={3}
+          placeholder=""
+          value={memo}
+          onChange={(event) => setMemo(event.target.value)}
+        />
       </section>
 
       <section className="block progress-block">
