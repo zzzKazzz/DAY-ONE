@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Complete } from './screens/Complete.tsx'
-import { DayDetail } from './screens/DayDetail.tsx'
 import { Home } from './screens/Home.tsx'
 import { Onboarding } from './screens/Onboarding.tsx'
 import { getAllEntries, getChallenge, saveChallenge, saveEntry } from './db.ts'
@@ -8,8 +7,7 @@ import { TARGET_DAYS, currentDayNumber, todayISO } from './lib.ts'
 import type { Challenge, Entry } from './types.ts'
 
 type View =
-  | { name: 'home' }
-  | { name: 'day'; dayNumber: number }
+  | { name: 'home'; dayNumber?: number }
   | { name: 'complete' }
 
 export default function App() {
@@ -64,27 +62,17 @@ export default function App() {
 
   const today = currentDayNumber(challenge.startedAt)
   const pastEnd = today > TARGET_DAYS
-  const dayNumber = Math.min(Math.max(today, 1), TARGET_DAYS)
+  const latestDay = Math.min(Math.max(today, 1), TARGET_DAYS)
+  const showComplete =
+    view.name === 'complete' ||
+    (pastEnd && view.name === 'home' && view.dayNumber == null)
 
-  if (view.name === 'day') {
-    return (
-      <DayDetail
-        challenge={challenge}
-        dayNumber={view.dayNumber}
-        entry={entries.find((entry) => entry.dayNumber === view.dayNumber)}
-        onBack={() =>
-          setView(pastEnd ? { name: 'complete' } : { name: 'home' })
-        }
-      />
-    )
-  }
-
-  if (view.name === 'complete' || pastEnd) {
+  if (showComplete) {
     return (
       <Complete
         challenge={challenge}
         entries={entries}
-        onOpenDay={(day) => setView({ name: 'day', dayNumber: day })}
+        onOpenDay={(day) => setView({ name: 'home', dayNumber: day })}
         onBack={
           today <= TARGET_DAYS ? () => setView({ name: 'home' }) : undefined
         }
@@ -92,15 +80,33 @@ export default function App() {
     )
   }
 
+  const viewingDay = Math.min(Math.max(view.dayNumber ?? latestDay, 1), latestDay)
+
   return (
     <Home
+      key={viewingDay}
       challenge={challenge}
-      dayNumber={dayNumber}
+      dayNumber={viewingDay}
+      latestDay={latestDay}
+      isToday={!pastEnd && viewingDay === latestDay}
       entries={entries}
       onSave={handleSave}
-      onOpenDay={(day) => setView({ name: 'day', dayNumber: day })}
+      onOpenDay={(day) => setView({ name: 'home', dayNumber: day })}
+      onPrev={
+        viewingDay > 1
+          ? () => setView({ name: 'home', dayNumber: viewingDay - 1 })
+          : undefined
+      }
+      onNext={
+        viewingDay < latestDay
+          ? () => setView({ name: 'home', dayNumber: viewingDay + 1 })
+          : undefined
+      }
+      onBack={pastEnd ? () => setView({ name: 'complete' }) : undefined}
       onOpenComplete={
-        today >= TARGET_DAYS ? () => setView({ name: 'complete' }) : undefined
+        today >= TARGET_DAYS && !pastEnd
+          ? () => setView({ name: 'complete' })
+          : undefined
       }
     />
   )

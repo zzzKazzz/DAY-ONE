@@ -3,15 +3,18 @@ import { formatMinutes, totalMinutes } from '../lib.ts'
 
 type Props = {
   fromDay: number
+  hideDay?: number
   entries: Entry[]
   onOpenDay: (dayNumber: number) => void
 }
 
-export function Timeline({ fromDay, entries, onOpenDay }: Props) {
-  if (fromDay < 1) return null
+export function Timeline({ fromDay, hideDay, entries, onOpenDay }: Props) {
+  const days = Array.from({ length: Math.max(fromDay, 0) }, (_, i) => fromDay - i).filter(
+    (day) => day !== hideDay,
+  )
+  if (days.length === 0) return null
 
   const byDay = new Map(entries.map((entry) => [entry.dayNumber, entry]))
-  const days = Array.from({ length: fromDay }, (_, i) => fromDay - i)
 
   return (
     <section className="timeline">

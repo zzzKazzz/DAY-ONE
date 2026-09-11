@@ -15,9 +15,14 @@ import {
 type Props = {
   challenge: Challenge
   dayNumber: number
+  latestDay: number
+  isToday: boolean
   entries: Entry[]
   onSave: (entry: Entry) => Promise<void>
   onOpenDay: (dayNumber: number) => void
+  onPrev?: () => void
+  onNext?: () => void
+  onBack?: () => void
   onOpenComplete?: () => void
 }
 
@@ -30,17 +35,22 @@ function toValid(activities: DraftActivity[]) {
 export function Home({
   challenge,
   dayNumber,
+  latestDay,
+  isToday,
   entries,
   onSave,
   onOpenDay,
+  onPrev,
+  onNext,
+  onBack,
   onOpenComplete,
 }: Props) {
-  const todayEntry = entries.find((entry) => entry.dayNumber === dayNumber)
+  const entry = entries.find((item) => item.dayNumber === dayNumber)
   const [activities, setActivities] = useState<DraftActivity[]>(() =>
-    toDraft(todayEntry?.activities ?? []),
+    toDraft(entry?.activities ?? []),
   )
-  const [memo, setMemo] = useState(todayEntry?.memo ?? '')
-  const [saved, setSaved] = useState(Boolean(todayEntry))
+  const [memo, setMemo] = useState(entry?.memo ?? '')
+  const [saved, setSaved] = useState(Boolean(entry))
   const [saving, setSaving] = useState(false)
 
   const validActivities = useMemo(() => toValid(activities), [activities])
@@ -69,12 +79,37 @@ export function Home({
 
   return (
     <main className="shell">
+      {onBack ? (
+        <button type="button" className="back" onClick={onBack}>
+          ←
+        </button>
+      ) : null}
       <p className="theme">{challenge.theme}</p>
-      <p className="day-label">DAY {dayNumber}</p>
+      <div className="day-nav">
+        <button
+          type="button"
+          className="day-nav-btn"
+          disabled={!onPrev}
+          onClick={onPrev}
+          aria-label="前の日"
+        >
+          ←
+        </button>
+        <p className="day-label">DAY {dayNumber}</p>
+        <button
+          type="button"
+          className="day-nav-btn"
+          disabled={!onNext}
+          onClick={onNext}
+          aria-label="次の日"
+        >
+          →
+        </button>
+      </div>
       <p className="date">{formatDisplayDate(date)}</p>
 
       <section className="block">
-        <h2>今日やったこと</h2>
+        <h2>{isToday ? '今日やったこと' : 'やったこと'}</h2>
         <ActivityEditor activities={activities} onChange={setActivities} />
       </section>
 
@@ -108,7 +143,7 @@ export function Home({
       </button>
       {saved ? <p className="saved">記録した</p> : null}
 
-      <ProgressBar current={Math.min(dayNumber, TARGET_DAYS)} total={TARGET_DAYS} />
+      <ProgressBar current={latestDay} total={TARGET_DAYS} />
 
       {onOpenComplete ? (
         <button type="button" className="text-link" onClick={onOpenComplete}>
@@ -117,7 +152,8 @@ export function Home({
       ) : null}
 
       <Timeline
-        fromDay={dayNumber - 1}
+        fromDay={latestDay}
+        hideDay={dayNumber}
         entries={entries}
         onOpenDay={onOpenDay}
       />
