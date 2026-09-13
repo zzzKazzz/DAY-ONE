@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from 'react'
 import type { Activity } from '../types.ts'
 import { emptyDraft, type DraftActivity } from '../draft.ts'
 
@@ -9,6 +10,17 @@ type Props = {
 }
 
 export function ActivityEditor({ activities, onChange }: Props) {
+  const listRef = useRef<HTMLUListElement>(null)
+
+  useLayoutEffect(() => {
+    const root = listRef.current
+    if (!root) return
+    for (const el of root.querySelectorAll<HTMLTextAreaElement>('.activity-text')) {
+      el.style.height = 'auto'
+      el.style.height = `${el.scrollHeight}px`
+    }
+  }, [activities])
+
   function update(id: string, patch: Partial<Activity>) {
     onChange(
       activities.map((activity) =>
@@ -37,12 +49,12 @@ export function ActivityEditor({ activities, onChange }: Props) {
 
   return (
     <div>
-      <ul className="activity-list">
+      <ul ref={listRef} className="activity-list">
         {activities.map((activity) => (
           <li key={activity.id} className="activity-row">
-            <input
+            <textarea
               className="activity-text"
-              type="text"
+              rows={1}
               placeholder="個人開発"
               value={activity.text}
               autoComplete="off"

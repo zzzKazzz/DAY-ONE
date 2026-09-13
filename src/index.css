@@ -180,6 +180,16 @@ button {
   font-size: 16px;
 }
 
+.activity-text {
+  display: block;
+  resize: none;
+  overflow: hidden;
+  padding: 0;
+  line-height: 1.45;
+  min-height: 1.45em;
+  overflow-wrap: anywhere;
+}
+
 .theme-input {
   margin: 28px 0 32px;
   padding: 0 0 12px;
