@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ActivityEditor } from '../components/ActivityEditor.tsx'
 import { ProgressBar } from '../components/ProgressBar.tsx'
 import { Timeline } from '../components/Timeline.tsx'
@@ -52,6 +52,23 @@ export function Home({
   const [memo, setMemo] = useState(entry?.memo ?? '')
   const [saved, setSaved] = useState(Boolean(entry))
   const [saving, setSaving] = useState(false)
+  const [toast, setToast] = useState<{ message: string; id: number } | null>(
+    null,
+  )
+  const memoRef = useRef<HTMLTextAreaElement>(null)
+
+  useLayoutEffect(() => {
+    const el = memoRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [memo])
+
+  useEffect(() => {
+    if (!toast) return
+    const timer = window.setTimeout(() => setToast(null), 2000)
+    return () => window.clearTimeout(timer)
+  }, [toast])
 
   const validActivities = useMemo(() => toValid(activities), [activities])
   const minutes = totalMinutes(validActivities)
@@ -72,6 +89,10 @@ export function Home({
         memo: memo.trim(),
       })
       setSaved(true)
+      setToast({
+        message: saved ? '更新されました' : '記録しました',
+        id: Date.now(),
+      })
     } finally {
       setSaving(false)
     }
@@ -119,6 +140,7 @@ export function Home({
           メモ
         </label>
         <textarea
+          ref={memoRef}
           id="memo"
           className="memo-input"
           rows={3}
@@ -142,6 +164,11 @@ export function Home({
         {saved ? '更新する' : '記録する'}
       </button>
       {saved ? <p className="saved">記録した</p> : null}
+      {toast ? (
+        <p key={toast.id} className="toast" role="status">
+          {toast.message}
+        </p>
+      ) : null}
 
       <ProgressBar current={latestDay} total={TARGET_DAYS} />
 

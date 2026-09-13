@@ -205,6 +205,8 @@ button {
   background: transparent;
   outline: none;
   resize: none;
+  overflow: hidden;
+  min-height: calc(1.5em * 3 + 12px);
   font: inherit;
   font-size: 16px;
   line-height: 1.5;
@@ -336,6 +338,42 @@ button {
   margin: 10px 0 0;
   text-align: center;
   font-size: 12px;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 20;
+  margin: 0;
+  padding: 14px 28px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: toast-pop 2s ease forwards;
+}
+
+@keyframes toast-pop {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -46%);
+  }
+  12% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .progress {
